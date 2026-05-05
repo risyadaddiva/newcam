@@ -140,7 +140,7 @@ export default function POSPage() {
   const handlePrint = async () => {
     try {
       const finalPaid = paymentMethod === "qris" ? total : paid;
-      const receiptBytes = buildReceipt({
+      const receiptBytes = await buildReceipt({
         items: cart,
         customerName,
         customerPhone,
