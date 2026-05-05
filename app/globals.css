@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #F8F9FA;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F1F3F6;
+  --text-primary: #23272F;
+  --text-secondary: #4F5D75;
+  --text-muted: #A0AEC0;
+  --gold: #FFD600;
+  --gold-light: #FFF176;
+  --gold-pale: #FFF9C4;
+  --border: rgba(255, 214, 0, 0.2);
+  --border-hover: rgba(255, 214, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 3px;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* Input styles */
+.input-coffee {
+  @apply w-full bg-espresso-mid border border-gold/20 rounded-lg px-4 py-3 text-cream
+    placeholder-cream/30 focus:outline-none focus:border-gold/60 focus:ring-1 focus:ring-gold/30
+    transition-all duration-200 font-body text-sm;
+}
+
+/* Button styles */
+.btn-gold {
+  @apply bg-gold hover:bg-gold-light text-espresso font-bold py-3 px-6 rounded-lg
+    transition-all duration-200 font-body tracking-wide disabled:opacity-40 disabled:cursor-not-allowed
+    active:scale-95;
+}
+
+.btn-outline {
+  @apply border border-gold/40 hover:border-gold text-cream/80 hover:text-cream
+    font-body py-3 px-6 rounded-lg transition-all duration-200 hover:bg-gold/10
+    active:scale-95;
+}
+
+/* Card styles */
+.card-coffee {
+  @apply bg-espresso-light border border-gold/10 rounded-xl p-4
+    hover:border-gold/30 transition-all duration-200;
+}
+
+/* Step indicator */
+.step-dot {
+  @apply w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
+    transition-all duration-300;
+}
+.step-dot.active {
+  @apply bg-gold text-espresso;
+}
+.step-dot.completed {
+  @apply bg-gold/30 text-gold;
+}
+.step-dot.inactive {
+  @apply bg-espresso-mid text-cream/30 border border-gold/10;
+}
+
+/* Tag badge */
+.tag-badge {
+  @apply text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, 
+    rgba(201,136,12,0) 0%, 
+    rgba(201,136,12,0.1) 50%, 
+    rgba(201,136,12,0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Divider */
+.divider-coffee {
+  @apply border-t border-gold/10 my-4;
+}
+
+/* Map container */
+#map-container {
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 136, 12, 0.2);
+}
