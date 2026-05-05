@@ -162,7 +162,7 @@ export default function POSPage() {
   };
 
   return (
-    <div className="flex gap-6 h-[calc(100vh-4rem)]">
+    <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[calc(100vh-4rem)]">
       {toast && (
         <Toast
           message={toast.message}
@@ -241,7 +241,7 @@ export default function POSPage() {
       </div>
 
       {/* Cart Panel */}
-      <div className="w-96 bg-espresso-light border border-gold/10 rounded-xl flex flex-col overflow-hidden">
+      <div className="w-full lg:w-96 bg-espresso-light border border-gold/10 rounded-xl flex flex-col overflow-hidden h-[500px] lg:h-auto mt-4 lg:mt-0">
         <div className="p-4 border-b border-gold/10">
           <h2 className="text-lg font-display font-bold text-cream">
             Keranjang

@@ -1,10 +1,5 @@
-import Sidebar from "@/components/pos/Sidebar";
+import AdminLayout from "@/components/pos/AdminLayout";
 
 export default function InventoryLayout({ children }) {
-  return (
-    <div className="flex min-h-screen bg-espresso">
-      <Sidebar />
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
-    </div>
-  );
+  return <AdminLayout>{children}</AdminLayout>;
 }
