@@ -19,7 +19,8 @@ export default function DashboardPage() {
   const [menuItems, setMenuItems] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [activeTab, setActiveTab] = useState("ringkasan");
-  const [dateFilter, setDateFilter] = useState(new Date().toISOString().split("T")[0]);
+  const [dateFrom, setDateFrom] = useState(new Date().toISOString().split("T")[0]);
+  const [dateTo, setDateTo] = useState(new Date().toISOString().split("T")[0]);
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [selectedTxn, setSelectedTxn] = useState(null);
 
@@ -44,16 +45,17 @@ export default function DashboardPage() {
   // Apply Filters
   const filteredTransactions = useMemo(() => {
     return transactions.filter((t) => {
-      // Date Filter
+      // Date Range Filter
       const tDate = new Date(t.createdAt).toISOString().split("T")[0];
-      const matchDate = dateFilter === "" || tDate === dateFilter;
+      const matchFrom = dateFrom === "" || tDate >= dateFrom;
+      const matchTo = dateTo === "" || tDate <= dateTo;
 
       // Payment Filter
       const matchPayment = paymentFilter === "all" || t.paymentMethod === paymentFilter;
 
-      return matchDate && matchPayment;
+      return matchFrom && matchTo && matchPayment;
     });
-  }, [transactions, dateFilter, paymentFilter]);
+  }, [transactions, dateFrom, dateTo, paymentFilter]);
 
   // Derived Stats
   const totalRevenue = filteredTransactions.reduce((sum, t) => sum + t.total, 0);
@@ -101,12 +103,30 @@ export default function DashboardPage() {
       <div className="flex flex-col md:flex-row gap-4 mb-8 bg-espresso-mid p-4 rounded-xl border border-gold/10">
         <div className="flex-1">
           <label className="block text-xs font-bold text-cream/70 uppercase tracking-widest mb-1.5">
-            Filter Tanggal
+            Dari Tanggal
           </label>
           <input
             type="date"
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
+            value={dateFrom}
+            onChange={(e) => {
+              setDateFrom(e.target.value);
+              if (dateTo && e.target.value > dateTo) setDateTo(e.target.value);
+            }}
+            className="input-coffee w-full"
+          />
+        </div>
+        <div className="flex-1">
+          <label className="block text-xs font-bold text-cream/70 uppercase tracking-widest mb-1.5">
+            Sampai Tanggal
+          </label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => {
+              setDateTo(e.target.value);
+              if (dateFrom && e.target.value < dateFrom) setDateFrom(e.target.value);
+            }}
+            min={dateFrom}
             className="input-coffee w-full"
           />
         </div>
@@ -273,9 +293,18 @@ export default function DashboardPage() {
             <div className="border-t border-b border-gold/10 py-3 space-y-2">
               <p className="text-xs font-bold uppercase text-gold tracking-widest mb-2">Item Dibeli</p>
               {selectedTxn.items.map((item, idx) => (
-                <div key={idx} className="flex justify-between text-sm font-body">
-                  <span className="text-cream">{item.name} <span className="text-cream/50 text-xs">x{item.qty}</span></span>
-                  <span className="text-cream/70">{fmt(item.price * item.qty)}</span>
+                <div key={idx} className="text-sm font-body">
+                  <div className="flex justify-between">
+                    <span className="text-cream">
+                      {item.name}
+                      {item.variant && <span className="text-gold/60 text-xs ml-1">({item.variant})</span>}
+                      <span className="text-cream/50 text-xs ml-1">x{item.qty}</span>
+                    </span>
+                    <span className="text-cream/70">{fmt(item.price * item.qty)}</span>
+                  </div>
+                  {item.note && (
+                    <p className="text-cream/40 text-xs italic ml-2">📝 {item.note}</p>
+                  )}
                 </div>
               ))}
             </div>
