@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import Card from "@/components/pos/Card";
 import Input from "@/components/pos/Input";
 import Button from "@/components/pos/Button";
 import Modal from "@/components/pos/Modal";
+import Toast from "@/components/pos/Toast";
 import {
   BarChart,
   Bar,
@@ -23,17 +24,34 @@ export default function DashboardPage() {
   const [dateTo, setDateTo] = useState(new Date().toISOString().split("T")[0]);
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [selectedTxn, setSelectedTxn] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const fetchTransactions = useCallback(() => {
+    fetch("/api/transactions")
+      .then((r) => r.json())
+      .then(setTransactions)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch("/api/menu")
       .then((r) => r.json())
       .then(setMenuItems)
       .catch(() => {});
-    fetch("/api/transactions")
-      .then((r) => r.json())
-      .then(setTransactions)
-      .catch(() => {});
-  }, []);
+    fetchTransactions();
+  }, [fetchTransactions]);
+
+  const handleDeleteTransaction = async (id) => {
+    if (!confirm("Yakin ingin menghapus pesanan ini?")) return;
+    const res = await fetch(`/api/transactions/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setToast({ message: "Pesanan berhasil dihapus", type: "success" });
+      setSelectedTxn(null);
+      fetchTransactions();
+    } else {
+      setToast({ message: "Gagal menghapus pesanan", type: "error" });
+    }
+  };
 
   const fmt = (n) =>
     new Intl.NumberFormat("id-ID", {
@@ -78,6 +96,13 @@ export default function DashboardPage() {
 
   return (
     <div className="pb-10">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <h1 className="font-display text-2xl font-bold text-cream">Dashboard</h1>
         <div className="flex gap-2">
@@ -314,7 +339,10 @@ export default function DashboardPage() {
               <span>{fmt(selectedTxn.total)}</span>
             </div>
 
-            <Button className="w-full mt-4" onClick={() => setSelectedTxn(null)}>Tutup</Button>
+            <div className="flex gap-2 mt-4">
+              <Button variant="danger" className="flex-1" onClick={() => handleDeleteTransaction(selectedTxn._id)}>Hapus</Button>
+              <Button variant="secondary" className="flex-1" onClick={() => setSelectedTxn(null)}>Tutup</Button>
+            </div>
           </div>
         )}
       </Modal>

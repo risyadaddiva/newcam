@@ -27,6 +27,7 @@ export default function InventoryPage() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [search, setSearch] = useState("");
+  const [filterCat, setFilterCat] = useState("Semua");
   
   // Categories State
   const [categories, setCategories] = useState([]);
@@ -187,9 +188,54 @@ export default function InventoryPage() {
     }
   };
 
-  const filtered = items.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleMove = async (index, direction) => {
+    if (filterCat === "Semua" || search !== "") {
+      setToast({ message: "Pilih satu kategori (tanpa pencarian) untuk mengubah urutan", type: "error" });
+      return;
+    }
+    const newFiltered = [...filtered];
+    if (direction === "up" && index > 0) {
+      const temp = newFiltered[index];
+      newFiltered[index] = newFiltered[index - 1];
+      newFiltered[index - 1] = temp;
+    } else if (direction === "down" && index < newFiltered.length - 1) {
+      const temp = newFiltered[index];
+      newFiltered[index] = newFiltered[index + 1];
+      newFiltered[index + 1] = temp;
+    } else {
+      return;
+    }
+
+    const updates = newFiltered.map((item, idx) => ({
+      _id: item._id,
+      order: idx,
+    }));
+
+    setItems((prevItems) => {
+      const newItems = prevItems.map((i) => {
+        const updated = updates.find((u) => u._id === i._id);
+        return updated ? { ...i, order: updated.order } : i;
+      });
+      return newItems.sort((a, b) => {
+        if (a.category === b.category) {
+          return (a.order || 0) - (b.order || 0);
+        }
+        return 0;
+      });
+    });
+
+    await fetch("/api/menu/reorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: updates }),
+    });
+  };
+
+  const filtered = items.filter((item) => {
+    const matchCat = filterCat === "Semua" || item.category === filterCat;
+    const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
+    return matchCat && matchSearch;
+  });
 
   const fmt = (n) =>
     new Intl.NumberFormat("id-ID", {
@@ -226,6 +272,22 @@ export default function InventoryPage() {
 
       {activeTab === "menu" && (
         <>
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+            {["Semua", ...Array.from(new Set(categories.map(c => c.name)))].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilterCat(cat)}
+                className={`px-3 py-1.5 rounded-full text-xs font-body font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  filterCat === cat
+                    ? "bg-gold text-espresso"
+                    : "bg-espresso-mid text-cream/40 hover:bg-espresso-light hover:text-cream/60 border border-gold/10"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
           <div className="flex justify-between items-center mb-4">
             <Input
               placeholder="Cari menu..."
@@ -237,7 +299,7 @@ export default function InventoryPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((item) => (
+            {filtered.map((item, index) => (
               <Card key={item._id}>
                 {item.image && (
                   <div className="w-full h-40 mb-3 rounded-lg overflow-hidden bg-espresso">
@@ -266,6 +328,12 @@ export default function InventoryPage() {
                   </span>
                 </div>
                 <div className="flex gap-2 mt-4">
+                  {filterCat !== "Semua" && search === "" && (
+                    <div className="flex gap-1 mr-auto">
+                      <Button variant="secondary" size="sm" onClick={() => handleMove(index, "up")} disabled={index === 0}>↑</Button>
+                      <Button variant="secondary" size="sm" onClick={() => handleMove(index, "down")} disabled={index === filtered.length - 1}>↓</Button>
+                    </div>
+                  )}
                   <Button variant="secondary" size="sm" onClick={() => openEdit(item)}>Edit</Button>
                   <Button variant="danger" size="sm" onClick={() => handleDelete(item._id)}>Hapus</Button>
                 </div>
