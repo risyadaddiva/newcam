@@ -71,7 +71,7 @@ export default function Sidebar({ isOpen, onClose }) {
             </div>
             <div>
               <h1 className="text-base font-display font-bold text-cream">
-                Coffee
+                COFFEE
               </h1>
               <p className="text-[10px] text-gold/60 font-body uppercase tracking-widest">
                 New Cammary
