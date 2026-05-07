@@ -5,7 +5,7 @@ import Category from "@/lib/models/Category";
 export async function GET() {
   try {
     await connectDB();
-    const categories = await Category.find({}).sort({ name: 1 });
+    const categories = await Category.find({}).sort({ order: 1, name: 1 });
     return NextResponse.json(categories);
   } catch (error) {
     return NextResponse.json({ error: "Gagal mengambil kategori" }, { status: 500 });

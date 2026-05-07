@@ -26,6 +26,7 @@ export default function InternalPage() {
   const [note, setNote] = useState("");
   const [filterCat, setFilterCat] = useState("Semua");
   const [search, setSearch] = useState("");
+  const [dbCategories, setDbCategories] = useState([]);
   const [toast, setToast] = useState(null);
   const [activeTab, setActiveTab] = useState("catat");
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -41,6 +42,20 @@ export default function InternalPage() {
       .catch(() => {});
   }, []);
 
+  const fetchCategories = useCallback(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.length > 0) {
+          setDbCategories(data);
+        } else {
+          const fallback = ["Kopi", "Non-Kopi", "Makanan", "Snack", "Minuman Dingin", "Signature", "Mocktail", "Lainnya"];
+          setDbCategories(fallback.map(c => ({ name: c })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const fetchRecords = useCallback(() => {
     fetch("/api/internal")
       .then((r) => r.json())
@@ -50,13 +65,14 @@ export default function InternalPage() {
 
   useEffect(() => {
     fetchMenu();
+    fetchCategories();
     fetchRecords();
-  }, [fetchMenu, fetchRecords]);
+  }, [fetchMenu, fetchCategories, fetchRecords]);
 
-  const categories = [
-    "Semua",
-    ...Array.from(new Set(menuItems.map((m) => m.category))),
-  ];
+  const categories = ["Semua", ...dbCategories.map((c) => c.name)];
+  menuItems.forEach((m) => {
+    if (!categories.includes(m.category)) categories.push(m.category);
+  });
 
   const filtered = menuItems.filter((item) => {
     const matchCat = filterCat === "Semua" || item.category === filterCat;

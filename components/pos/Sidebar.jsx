@@ -71,10 +71,10 @@ export default function Sidebar({ isOpen, onClose }) {
             </div>
             <div>
               <h1 className="text-base font-display font-bold text-cream">
-                New Cammary
+                Coffee
               </h1>
               <p className="text-[10px] text-gold/60 font-body uppercase tracking-widest">
-                Point of Sales
+                New Cammary
               </p>
             </div>
           </div>
@@ -140,6 +140,13 @@ export default function Sidebar({ isOpen, onClose }) {
             <span>🚪</span>
             Logout
           </button>
+        </div>
+
+        {/* Watermark */}
+        <div className="px-4 pb-6 text-center">
+          <p className="text-[10px] italic text-cream/30 font-display">
+            Made with passion by <span className="text-gold/50 font-semibold tracking-wider not-italic">Wanderlust</span>
+          </p>
         </div>
       </aside>
     </>

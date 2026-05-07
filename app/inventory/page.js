@@ -188,6 +188,39 @@ export default function InventoryPage() {
     }
   };
 
+  const handleCatMove = async (index, direction) => {
+    if (categories.some(c => c._id === c.name)) {
+      setToast({ message: "Harap edit atau hapus kategori bawaan terlebih dahulu sebelum mengatur urutan.", type: "error" });
+      return;
+    }
+
+    const newCategories = [...categories];
+    if (direction === "up" && index > 0) {
+      const temp = newCategories[index];
+      newCategories[index] = newCategories[index - 1];
+      newCategories[index - 1] = temp;
+    } else if (direction === "down" && index < newCategories.length - 1) {
+      const temp = newCategories[index];
+      newCategories[index] = newCategories[index + 1];
+      newCategories[index + 1] = temp;
+    } else {
+      return;
+    }
+
+    const updates = newCategories.map((item, idx) => ({
+      _id: item._id,
+      order: idx,
+    }));
+
+    setCategories(newCategories);
+
+    await fetch("/api/categories/reorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: updates }),
+    });
+  };
+
   const handleMove = async (index, direction) => {
     if (filterCat === "Semua" || search !== "") {
       setToast({ message: "Pilih satu kategori (tanpa pencarian) untuk mengubah urutan", type: "error" });
@@ -406,9 +439,23 @@ export default function InventoryPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories.map((cat) => (
+            {categories.map((cat, index) => (
               <Card key={cat._id} className="flex justify-between items-center">
-                <span className="font-body font-semibold text-cream">{cat.name}</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col gap-0.5">
+                    <button
+                      onClick={() => handleCatMove(index, "up")}
+                      disabled={index === 0}
+                      className="text-[10px] bg-espresso-mid text-cream/40 hover:text-cream px-1.5 py-0.5 rounded cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    >▲</button>
+                    <button
+                      onClick={() => handleCatMove(index, "down")}
+                      disabled={index === categories.length - 1}
+                      className="text-[10px] bg-espresso-mid text-cream/40 hover:text-cream px-1.5 py-0.5 rounded cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    >▼</button>
+                  </div>
+                  <span className="font-body font-semibold text-cream">{cat.name}</span>
+                </div>
                 <div className="flex gap-2">
                   <button onClick={() => openCatEdit(cat)} className="text-gold hover:text-gold-light text-sm">Edit</button>
                   <button onClick={() => handleCatDelete(cat._id)} className="text-red-400 hover:text-red-300 text-sm">Hapus</button>

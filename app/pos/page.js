@@ -19,6 +19,7 @@ export default function POSPage() {
   const [toast, setToast] = useState(null);
   const [filterCat, setFilterCat] = useState("Semua");
   const [search, setSearch] = useState("");
+  const [dbCategories, setDbCategories] = useState([]);
 
   // Variant modal
   const [variantModalOpen, setVariantModalOpen] = useState(false);
@@ -38,6 +39,20 @@ export default function POSPage() {
       .catch(() => {});
   }, []);
 
+  const fetchCategories = useCallback(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.length > 0) {
+          setDbCategories(data);
+        } else {
+          const fallback = ["Kopi", "Non-Kopi", "Makanan", "Snack", "Minuman Dingin", "Signature", "Mocktail", "Lainnya"];
+          setDbCategories(fallback.map(c => ({ name: c })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const fetchOpenBills = useCallback(() => {
     fetch("/api/openbills")
       .then((r) => r.json())
@@ -47,13 +62,14 @@ export default function POSPage() {
 
   useEffect(() => {
     fetchMenu();
+    fetchCategories();
     fetchOpenBills();
-  }, [fetchMenu, fetchOpenBills]);
+  }, [fetchMenu, fetchCategories, fetchOpenBills]);
 
-  const categories = [
-    "Semua",
-    ...Array.from(new Set(menuItems.map((m) => m.category))),
-  ];
+  const categories = ["Semua", ...dbCategories.map((c) => c.name)];
+  menuItems.forEach((m) => {
+    if (!categories.includes(m.category)) categories.push(m.category);
+  });
 
   const filtered = menuItems.filter((item) => {
     const matchCat = filterCat === "Semua" || item.category === filterCat;

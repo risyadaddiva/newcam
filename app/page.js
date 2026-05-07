@@ -6,7 +6,7 @@ import { menuCategories, formatRupiah } from '@/lib/menu';
 // MapPicker dihapus, ongkir akan dikonfirmasi admin via WhatsApp
 
 const SHOP_WHATSAPP = '6285801611630';
-const SHOP_ADDRESS = 'Jl. Manisi, Cipadung, Kec. Cibiru, Kota Bandung, Jawa Barat 40614';
+const SHOP_ADDRESS = 'Jl. Manisi, Cipadung, Kec. Cibiru, Kota Bandung';
 const SHOP_INSTAGRAM = 'coffee_newcammary';
 const STEPS = [
   { id: 1, label: 'Info' },
@@ -104,8 +104,8 @@ function Step1CustomerInfo({ customer, onChange, onNext }) {
           </div>
         </div>
         <h1 className="font-display text-4xl font-bold text-cream leading-tight">
-          Coffee New<br />
-          <span className="text-gold italic">Cammary</span>
+          Coffee<br />
+          <span className="text-gold italic">New Cammary</span>
         </h1>
         <p className="text-cream/50 text-sm font-body mt-2">📍 {SHOP_ADDRESS}</p>
         <div className="w-16 h-px bg-gold/40 mx-auto mt-4" />
@@ -114,7 +114,7 @@ function Step1CustomerInfo({ customer, onChange, onNext }) {
       <div className="space-y-4">
         <div>
           <label className="block text-cream/70 text-xs font-body font-bold uppercase tracking-widest mb-1.5">
-            Nama Lengkap
+            Nama
           </label>
           <input
             type="text"
@@ -635,6 +635,13 @@ export default function OrderPage() {
             <SuccessPage paymentMethod={paymentMethod} onNewOrder={handleNewOrder} />
           </div>
         )}
+
+        {/* Watermark */}
+        <div className="mt-auto pt-16 pb-4 text-center">
+          <p className="text-[10px] italic text-cream/30 font-display">
+            Made with passion by <span className="text-gold/50 font-semibold tracking-wider not-italic">Wanderlust</span>
+          </p>
+        </div>
       </div>
 
       {showQRIS && (
