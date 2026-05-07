@@ -10,6 +10,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   { href: "/pos", label: "Kasir", icon: "☕" },
   { href: "/inventory", label: "Inventori", icon: "📦" },
+  { href: "/internal", label: "Internal", icon: "📋" },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {

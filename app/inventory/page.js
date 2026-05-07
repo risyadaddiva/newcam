@@ -7,12 +7,15 @@ import Modal from "@/components/pos/Modal";
 import Input from "@/components/pos/Input";
 import Toast from "@/components/pos/Toast";
 
+const VARIANT_OPTIONS = ["Ice/Hot", "Goreng/Rebus"];
+
 const emptyForm = {
   name: "",
   price: "",
   category: "",
   stock: "",
   image: "",
+  variants: [],
 };
 
 export default function InventoryPage() {
@@ -62,7 +65,7 @@ export default function InventoryPage() {
 
   // --- MENU HANDLERS ---
   const openAdd = () => {
-    setForm({ ...emptyForm, category: categories[0]?.name || "" });
+    setForm({ ...emptyForm, category: categories[0]?.name || "", variants: [] });
     setEditingId(null);
     setModalOpen(true);
   };
@@ -74,6 +77,7 @@ export default function InventoryPage() {
       category: item.category,
       stock: String(item.stock),
       image: item.image || "",
+      variants: item.variants || [],
     });
     setEditingId(item._id);
     setModalOpen(true);
@@ -87,6 +91,7 @@ export default function InventoryPage() {
       category: form.category,
       stock: Number(form.stock),
       image: form.image,
+      variants: form.variants,
     };
 
     const url = editingId ? `/api/menu/${editingId}` : "/api/menu";
@@ -243,6 +248,13 @@ export default function InventoryPage() {
                   <div>
                     <h3 className="font-body font-semibold text-cream">{item.name}</h3>
                     <p className="text-sm text-cream/40 font-body">{item.category}</p>
+                    {item.variants && item.variants.length > 0 && (
+                      <div className="flex gap-1 mt-1 flex-wrap">
+                        {item.variants.map((v) => (
+                          <span key={v} className="text-[10px] px-1.5 py-0.5 rounded bg-gold/10 text-gold/70 font-body">{v}</span>
+                        ))}
+                      </div>
+                    )}
                     <p className="text-lg font-bold text-gold mt-1">{fmt(item.price)}</p>
                   </div>
                   <span
@@ -286,6 +298,28 @@ export default function InventoryPage() {
                 </select>
               </div>
               <Input label="Stok" type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} required min="0" />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-body font-bold uppercase tracking-widest text-cream/70">Varian (Opsional)</label>
+                <div className="space-y-2">
+                  {VARIANT_OPTIONS.map((v) => (
+                    <label key={v} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={form.variants.includes(v)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setForm({ ...form, variants: [...form.variants, v] });
+                          } else {
+                            setForm({ ...form, variants: form.variants.filter((x) => x !== v) });
+                          }
+                        }}
+                        className="w-4 h-4 accent-gold"
+                      />
+                      <span className="text-sm font-body text-cream/70">{v}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
               <Input label="URL Foto (Opsional)" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://example.com/photo.jpg" />
               <div className="flex gap-3 justify-end pt-2">
                 <Button variant="ghost" type="button" onClick={() => setModalOpen(false)}>Batal</Button>
