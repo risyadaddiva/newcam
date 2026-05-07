@@ -18,7 +18,7 @@ export default function AdminLayout({ children }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <span className="ml-4 font-display font-bold text-cream">New Cammary POS</span>
+        <span className="ml-4 font-display font-bold text-cream">Coffee New Cammary</span>
       </div>
 
       {/* Sidebar with mobile overlay */}
