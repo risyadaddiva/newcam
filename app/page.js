@@ -450,15 +450,18 @@ function QRISModal({ total, onConfirmPayment, onClose }) {
           <div className="bg-espresso-mid border border-gold/20 rounded-xl p-3">
             <p className="text-cream/60 text-xs font-body">Total yang harus dibayar</p>
             <p className="text-gold font-display font-bold text-2xl">{formatRupiah(total)}</p>
+            <p className="text-green-400 text-xs font-bold font-body mt-1">
+              Belum termasuk ongkir
+            </p>
           </div>
 
           <p className="text-cream/50 text-xs font-body">
-            Scan QR code menggunakan aplikasi m-banking atau e-wallet favorit Anda
+            Simpen dulu yaa QRIS nya, nanti bayarnya sekalian ongkir. 
           </p>
 
           <div className="space-y-2">
             <button onClick={onConfirmPayment} className="btn-gold w-full text-sm">
-              ✅ Sudah Bayar — Kirim Konfirmasi WhatsApp
+              ✅ Konfirmasi WhatsApp
             </button>
             <button onClick={onClose} className="btn-outline w-full text-sm">
               Kembali
